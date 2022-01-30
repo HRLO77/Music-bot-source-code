@@ -37,6 +37,9 @@ read_json()
 
 print(default_stream_channel)
 
+
+import os
+
 intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix='?', intents=intents)
 bot.remove_command("help")
@@ -136,22 +139,21 @@ async def on_ready():
 
 
 @bot.command(aliases=('start', 'load'))
-async def play(ctx, url: str):
+async def play(ctx, url: str = None):
     global default_stream_channel
     global player
+    for file in os.listdir("./"):
+        if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
+            os.remove(file)
     read_json()
     if default_stream_channel[ctx.guild.id] in default_stream_channel.values():
         pass
     else:
         await ctx.send(f'{ctx.author.mention} you do not have a default streaming channel, use the `?set_channel (voice_channel_id)` or set it defaulted in the code dictionary.')
         return
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            os.remove(file)
     try:
         requests.get(url)
-    except (exceptions.MissingSchema, exceptions.RequestException,   exceptions.UR    except (exceptions.MissingSchema, exceptions.RequestException, exceptions.URLRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError, exceptions.RequestsDependencyWarning, exceptions.Timeout, exceptions.TooManyRedirects, exceptions.InvalidURL, exceptions.InvalidSchema, exceptions.InvalidSchema, exceptions.InvalidProxyURL):
-LRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError):
+    except (exceptions.MissingSchema, exceptions.RequestException, exceptions.URLRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError, exceptions.RequestsDependencyWarning, exceptions.Timeout, exceptions.TooManyRedirects, exceptions.InvalidURL, exceptions.InvalidSchema, exceptions.InvalidSchema, exceptions.InvalidProxyURL):
         await ctx.send(f'{ctx.author.mention} that is not a valid youtube video URL.')
         return
     else:
@@ -176,6 +178,7 @@ LRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, ex
         session = await channel.connect()
         player[ctx.guild.id] = session
         await session.play(source)
+        return
 
 
 @bot.command(aliases=('default_channel', 'add_channel'))
@@ -227,7 +230,7 @@ async def close(ctx):
         del player[ctx.guild.id]
         await ctx.send(f'{ctx.author.mention} stream was disconnected.')
         for file in os.listdir("./"):
-            if file.endswith(".mp3"):
+            if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
                 os.remove(file)
     else:
         await ctx.send(f'{ctx.author.mention} no open stream to disconnect.')
@@ -282,12 +285,19 @@ async def terminate(ctx):
 async def remove_downloads(ctx):
     try:
         for file in os.listdir("./"):
-            if file.endswith(".mp3"):
+            if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
                 os.remove(file)
     except (os.error.winerror, os.error.errno, os.error.strerror):
         await ctx.send(f'{ctx.author.mention} could not clear downloads.')
     else:
         await ctx.send(f'{ctx.author.mention} cleared all downloads.')
+
+
+@bot.event
+async def on_disconnect():
+    for file in os.listdir("./"):
+        if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
+            os.remove(file)
 
 
 bot.run(TOKEN)
