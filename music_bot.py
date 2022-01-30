@@ -52,7 +52,7 @@ async def help(ctx):
 
 @help.command()
 async def play(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Plays audio from a youtube URL in the default voice channel.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Plays audio from a youtube URL in the default voice channel.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?play <yt_url>`")
     embed.add_field(name = "**Aliases**", value = "`?start <yt_url>`, `?load <yt_url>`")
     await ctx.send(embed=embed)
@@ -60,7 +60,7 @@ async def play(ctx):
 
 @help.command()
 async def pause(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Pauses the audio played from the current voice channel session.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Pauses the audio played from the current voice channel session.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?pause`")
     embed.add_field(name = '**Aliases**', value = '`?tempstop`, `?temp_stop`')
     await ctx.send(embed=embed)
@@ -68,7 +68,7 @@ async def pause(ctx):
 
 @help.command()
 async def resume(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Resumes the audio played from the current voice channel session.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Resumes the audio played from the current voice channel session.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?resume`")
     embed.add_field(name = '**Aliases**', value = '`?restart`, `?reload`')
     await ctx.send(embed=embed)
@@ -76,7 +76,7 @@ async def resume(ctx):
 
 @help.command()
 async def stop(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Disconnects the bot from the current voice channel session.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Disconnects the bot from the current voice channel session.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?stop`")
     embed.add_field(name = '**Aliases**', value = '`?leave`, `?disconnect`, `?close`')
     await ctx.send(embed=embed)
@@ -84,7 +84,7 @@ async def stop(ctx):
 
 @help.command()
 async def set_channel(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Specifies the default voice channel for playing audio within the current guild.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Specifies the default voice channel for playing audio within the current guild.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?set_channel`")
     embed.add_field(name = '**Aliases**', value = '`?add_channel`, `?default_channel`')
     await ctx.send(embed=embed)
@@ -92,7 +92,7 @@ async def set_channel(ctx):
 
 @help.command()
 async def ping(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Current bot users latency.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Current bot users latency.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?ping`")
     embed.add_field(name = '**Aliases**', value = '`?latency`')
     await ctx.send(embed=embed)
@@ -100,7 +100,7 @@ async def ping(ctx):
 
 @help.command()
 async def voice_ping(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Current voice connection sessions latency", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Current voice connection sessions latency", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?voice_ping`")
     embed.add_field(name = '**Aliases**', value = '`?voice_latency`')
     await ctx.send(embed=embed)
@@ -108,7 +108,7 @@ async def voice_ping(ctx):
 
 @help.command()
 async def avg_ping(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Current voice connection sessions average latency.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Current voice connection sessions average latency.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?avg_ping`")
     embed.add_field(name = '**Aliases**', value = '`?avg_latency`')
     await ctx.send(embed=embed)
@@ -116,7 +116,7 @@ async def avg_ping(ctx):
 
 @help.command()
 async def terminate(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Closes the bot users process.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Closes the bot users process.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?terminate`")
     embed.add_field(name = '**Aliases**', value = '`?kill`')
     await ctx.send(embed=embed)
@@ -124,7 +124,7 @@ async def terminate(ctx):
 
 @help.command()
 async def rm_downloads(ctx):
-    embed = disnake.Embed(title = ctx.command, description = "Deletes all downloads from player.", color = ctx.author.color)
+    embed = disnake.Embed(title = str(ctx.command).rsplit(' ')[1], description = "Deletes all downloads from player.", color = ctx.author.color)
     embed.add_field(name = "**Syntax**", value = "`?rm_downloads`")
     embed.add_field(name = '**Aliases**', value = '`?remove_downloads`, `?delete_downloads`, `?clear_downloads`')
     await ctx.send(embed=embed)
@@ -150,7 +150,8 @@ async def play(ctx, url: str):
             os.remove(file)
     try:
         requests.get(url)
-    except (exceptions.MissingSchema, exceptions.RequestException,   exceptions.URLRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError):
+    except (exceptions.MissingSchema, exceptions.RequestException,   exceptions.UR    except (exceptions.MissingSchema, exceptions.RequestException, exceptions.URLRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError, exceptions.RequestsDependencyWarning, exceptions.Timeout, exceptions.TooManyRedirects, exceptions.InvalidURL, exceptions.InvalidSchema, exceptions.InvalidSchema, exceptions.InvalidProxyURL):
+LRequired, exceptions.Timeout, exceptions.SSLError, exceptions.BaseHTTPError, exceptions.ProxyError):
         await ctx.send(f'{ctx.author.mention} that is not a valid youtube video URL.')
         return
     else:
