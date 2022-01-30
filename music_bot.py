@@ -4,6 +4,7 @@ import requests
 import youtube_dl
 import asyncio
 import json
+import os
 
 
 TOKEN = 'TOKEN'
@@ -29,14 +30,12 @@ def update_json(key, value):
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 exceptions = requests.exceptions
 player = {}
-default_stream_channel = {885170029824450580: 895076307958906923, 922981767974092810: 922981768280289284}
+# Follow this syntax for setting up what vc within what guild the music bot should join on playing audio, follow the same syntax in json except with guild_id as a string and channel_id_to_join as an integer.
+default_stream_channel = {'guild_id': 'channel_id_to_join'}
 
 read_json()
 
 print(default_stream_channel)
-
-
-import os
 
 intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix='?', intents=intents)
