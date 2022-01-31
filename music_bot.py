@@ -38,8 +38,6 @@ read_json()
 print(default_stream_channel)
 
 
-import os
-
 intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix='?', intents=intents)
 bot.remove_command("help")
@@ -142,9 +140,12 @@ async def on_ready():
 async def play(ctx, url: str = None):
     global default_stream_channel
     global player
-    for file in os.listdir("./"):
-        if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
-            os.remove(file)
+    try:
+        for file in os.listdir("./"):
+            if file.endswith(".mp3"):
+                os.remove(file)
+    except (os.error.winerror, os.error.errno, os.error.strerror):
+        await ctx.send(f'{ctx.author.mention} could not clear downloads.')
     read_json()
     if default_stream_channel[ctx.guild.id] in default_stream_channel.values():
         pass
@@ -164,21 +165,19 @@ async def play(ctx, url: str = None):
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
-                'preferredquality': '192',
+                'preferredquality': '384',
             }],
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download(url_list=[url])
+            song = ydl.download(url_list=[url])
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
                 os.rename(file, "song.mp3")
         source = await disnake.FFmpegOpusAudio.from_probe("song.mp3")
         await ctx.send(f'{ctx.author.mention} stream has been started!')
         channel = await ctx.guild.fetch_channel(default_stream_channel[ctx.guild.id])
-        session = await channel.connect()
-        player[ctx.guild.id] = session
-        await session.play(source)
-        return
+        player[ctx.guild.id] = await channel.connect()
+        await (player[ctx.guild.id]).play(source)
 
 
 @bot.command(aliases=('default_channel', 'add_channel'))
@@ -225,21 +224,27 @@ async def resume(ctx):
 async def close(ctx):
     global player
     if player.get(ctx.guild.id) in player.values():
-        session_get = player[ctx.guild.id]
-        await session_get.disconnect()
+        await (player[ctx.guild.id]).disconnect()
         del player[ctx.guild.id]
         await ctx.send(f'{ctx.author.mention} stream was disconnected.')
-        for file in os.listdir("./"):
-            if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
-                os.remove(file)
+        try:
+            for file in os.listdir("./"):
+                if file.endswith(".mp3"):
+                    os.remove(file)
+        except (os.error.winerror, os.error.errno, os.error.strerror):
+            await ctx.send(f'{ctx.author.mention} could not clear downloads.')
     else:
         await ctx.send(f'{ctx.author.mention} no open stream to disconnect.')
 
 
 @bot.event
 async def on_command_error(ctx, error):
+    errors = "Command raised an exception: TypeError: object NoneType can't be used in 'await' expression"
+    if str(errors) in str(error):
+        return
     embed = disnake.Embed(title='An error occurred:', description=f'`{error}`')
     await ctx.send(embed=embed)
+
 
 @bot.command(aliases=['latency'])
 async def ping(ctx):
@@ -254,9 +259,6 @@ async def voice_ping(ctx):
     if player.get(ctx.guild.id) in player.values():
         session_get = player[ctx.guild.id]
         await ctx.send(f'{ctx.author.mention} {round(session_get.latency * 1000)} ms voice ping.')
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.remove(file)
     else:
         await ctx.send(f'{ctx.author.mention} no open stream.')
 
@@ -268,9 +270,6 @@ async def avg_ping(ctx):
     if player.get(ctx.guild.id) in player.values():
         session_get = player[ctx.guild.id]
         await ctx.send(f'{ctx.author.mention} {round(session_get.average_latency * 1000)} ms average voice ping.')
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.remove(file)
     else:
         await ctx.send(f'{ctx.author.mention} no open stream.')
 
@@ -285,19 +284,12 @@ async def terminate(ctx):
 async def remove_downloads(ctx):
     try:
         for file in os.listdir("./"):
-            if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
+            if file.endswith(".mp3"):
                 os.remove(file)
     except (os.error.winerror, os.error.errno, os.error.strerror):
         await ctx.send(f'{ctx.author.mention} could not clear downloads.')
     else:
         await ctx.send(f'{ctx.author.mention} cleared all downloads.')
-
-
-@bot.event
-async def on_disconnect():
-    for file in os.listdir("./"):
-        if file.endswith(".mp3") or file.endswith(".wave") or file.endswith(".webm") or file.endswith(".part"):
-            os.remove(file)
 
 
 bot.run(TOKEN)
