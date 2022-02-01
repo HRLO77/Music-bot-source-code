@@ -319,6 +319,7 @@ async def remove_downloads(ctx):
 async def on_message(message: disnake.Message):
     if bot.user in message.mentions:
         await message.channel.send(f'{message.author.mention} try sending `?help` for info on how to use me!')
+    await bot.process_commands(message)
 
 
 bot.run(TOKEN)
