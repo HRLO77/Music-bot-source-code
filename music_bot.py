@@ -5,6 +5,8 @@ import youtube_dl
 import asyncio
 import json
 import os
+import tracemalloc
+tracemalloc.start()
 
 
 TOKEN = 'TOKEN'
