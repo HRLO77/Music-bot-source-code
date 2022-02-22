@@ -151,6 +151,8 @@ async def rm_downloads(ctx):
 @bot.event
 async def on_ready():
     print(f'Ready to start laying off some beats in {len(bot.guilds)} servers for {len(bot.users)} users!')
+    await bot.change_presence(activity=disnake.Game(f'{bot.command_prefix}help'))
+
 
 
 @bot.command(aliases=('start', 'load'))
